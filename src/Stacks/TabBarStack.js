@@ -8,22 +8,22 @@ import NoteListScreen from '../Screens/NoteListScreen';
 const Stack = createStackNavigator();
 
 export default function TabBarStack() {
-    return (
-        <Stack.Navigator initialRouteName="NoteList">
-            <Stack.Screen
-                name="Note"
-                component={NoteScreen}
-                options={{
-                    headerShown:false
-                }}
-            />
-            <Stack.Screen
-                name="NoteList"
-                component={NoteListScreen}
-                options={{
-                    headerShown:false
-                }}
-            />
-        </Stack.Navigator>
-    )
+  return (
+    <Stack.Navigator initialRouteName="NoteList">
+      <Stack.Screen
+        name="NoteScreen"
+        component={NoteScreen}
+        options={{
+          headerShown: false
+        }}
+      />
+      <Stack.Screen
+        name="NoteListScreen"
+        component={NoteListScreen}
+        options={{
+          headerShown: false
+        }}
+      />
+    </Stack.Navigator>
+  )
 }
