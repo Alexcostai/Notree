@@ -1,30 +1,34 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import Icon from 'react-native-vector-icons/dist/Ionicons';
 import { TextInput, HelperText } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 
-import globalStyles from '../GlobalStyles';
 import Client from '../Client';
+import globalStyles from '../GlobalStyles';
+import { UserSessionContext } from '../Context';
+import globalConstants from '../GlobalConstants.js';
 
 export default function EPInput(props) {
 
-  const INVALID_EMAIL = "El email es invalido";
-  const INVALID_DATA = "El email y/o contraseña son invalidos";
-
+  const {
+    INVALID_EMAIL_MESSAGE,
+    INVALID_DATA_LOGIN_MESSAGE,
+  } = globalConstants.VALIDATIONS;
   const [login, setLogin] = useState({
     email: "",
     password: ""
   })
   const [showPassword, setShowPassword] = useState(false);
   const [invalidData, setInvalidData] = useState({
-    type: "",
+    message: "",
     status: false,
   });
+  const userContext = useContext(UserSessionContext);
 
   function handleChangeValue(name, value) {
     if (invalidData.status) {
-      setInvalidData({ type: "", status: false });
+      setInvalidData({ message: "", status: false });
     }
     setLogin({ ...login, [name]: value });
   }
@@ -36,7 +40,7 @@ export default function EPInput(props) {
   function validateData() {
     const reg = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
     if (!reg.test(login.email)) {
-      setInvalidData({ type: INVALID_EMAIL, status: true });
+      setInvalidData({ message: INVALID_EMAIL_MESSAGE, status: true });
       return false;
     }
     return true;
@@ -47,8 +51,9 @@ export default function EPInput(props) {
       try {
         const res = await Client.signin(login)
         await AsyncStorage.setItem('user_session', res.data.token);
+        userContext.handleIsLogged(true);
       } catch (error) {
-        setInvalidData({ type: INVALID_DATA, status: true });
+        setInvalidData({ message: INVALID_DATA_LOGIN_MESSAGE, status: true });
         console.log(error);
       }
     }
@@ -58,7 +63,7 @@ export default function EPInput(props) {
     if (invalidData.status) {
       return (
         <HelperText type="error" visible={invalidData.status} style={{ fontSize: 15, textAlign: "center" }}>
-          {invalidData.type}
+          {invalidData.message}
         </HelperText>
       )
     }

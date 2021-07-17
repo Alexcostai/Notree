@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { TextInput, HelperText } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/dist/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -6,30 +6,34 @@ import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-nati
 
 import Client from '../Client';
 import globalStyles from '../GlobalStyles';
+import { UserSessionContext } from '../Context';
+import globalConstants from '../GlobalConstants';
 
 export default function RegisterInputs() {
 
-  const INVALID_EMAIL = "El email es invalido";
-  const INVALID_NAME = "El nombre no puede estar vacio ni tener menos de 3 caracteres";
-  const INVALID_LAST_NAME = "El apellido no puede estar vacio ni tenes menos de 3 caracteres";
-  const INVALID_DATA = "El email ya esta registrado.\n¿Ya tenes una cuenta?";
-  const INVALID_PASSWORD = "La contraseña debe tener al menos 8 caracteres, 1 mayúscula, 1 número y 1 simbolo";
-
+  const {
+    INVALID_DATA_REGISTER_MESSAGE,
+    INVALID_NAME_MESSAGE,
+    INVALID_EMAIL_MESSAGE,
+    INVALID_PASSWORD_MESSAGE,
+    INVALID_LAST_NAME_MESSAGE,
+  } = globalConstants.VALIDATIONS;
   const [register, setRegister] = useState({
     name: '',
-    lastName: '',
     email: '',
+    lastName: '',
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [invalidData, setInvalidData] = useState({
-    type: "",
+    message: "",
     status: false,
   });
+  const userContext = useContext(UserSessionContext);
 
   const handleChangeValue = (name, value) => {
     if (invalidData.status) {
-      setInvalidData({ type: "", status: false });
+      setInvalidData({ message: "", status: false });
     }
     setRegister({ ...register, [name]: value });
   }
@@ -42,16 +46,16 @@ export default function RegisterInputs() {
     const regEmail = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
     const regPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{8,}$/;
     if (!register.name || register.name < 3) {
-      setInvalidData({ type: INVALID_NAME, status: true });
+      setInvalidData({ message: INVALID_NAME_MESSAGE, status: true });
       return false;
     } else if (!register.lastName || register.lastName < 3) {
-      setInvalidData({ type: INVALID_LAST_NAME, status: true });
+      setInvalidData({ message: INVALID_LAST_NAME_MESSAGE, status: true });
       return false;
     } else if (!regEmail.test(register.email)) {
-      setInvalidData({ type: INVALID_EMAIL, status: true });
+      setInvalidData({ message: INVALID_EMAIL_MESSAGE, status: true });
       return false;
     } else if (!regPassword.test(register.password)) {
-      setInvalidData({ type: INVALID_PASSWORD, status: true });
+      setInvalidData({ message: INVALID_PASSWORD_MESSAGE, status: true });
       return false;
     }
     return true;
@@ -61,9 +65,10 @@ export default function RegisterInputs() {
     if (validateData()) {
       try {
         const res = await Client.signup(register);
-        AsyncStorage.setItem('user_session', res.data.token);
+        await AsyncStorage.setItem('user_session', res.data.token);
+        userContext.handleIsLogged(true);
       } catch (error) {
-        setInvalidData({ type: INVALID_DATA, status: true });
+        setInvalidData({ message: INVALID_DATA_REGISTER_MESSAGE, status: true });
         console.log(error);
       }
     }
@@ -73,7 +78,7 @@ export default function RegisterInputs() {
     if (invalidData.status) {
       return (
         <HelperText type="error" visible={invalidData.status} style={{ fontSize: 15, textAlign: "center" }}>
-          {invalidData.type}
+          {invalidData.message}
         </HelperText>
       )
     }
