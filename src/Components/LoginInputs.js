@@ -47,7 +47,7 @@ export default function EPInput(props) {
   }
 
   async function onPress() {
-    if (validateData()) {
+    /* if (validateData()) {
       try {
         const res = await Client.signin(login)
         await AsyncStorage.setItem('user_session', res.data.token);
@@ -56,7 +56,8 @@ export default function EPInput(props) {
         setInvalidData({ message: INVALID_DATA_LOGIN_MESSAGE, status: true });
         console.log(error);
       }
-    }
+    } */
+    userContext.handleIsLogged(true);
   }
 
   function showInvalidData() {

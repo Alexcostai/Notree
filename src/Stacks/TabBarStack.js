@@ -9,7 +9,7 @@ const Stack = createStackNavigator();
 
 export default function TabBarStack() {
   return (
-    <Stack.Navigator initialRouteName="NoteList">
+    <Stack.Navigator initialRouteName="NoteListScreen">
       <Stack.Screen
         name="NoteScreen"
         component={NoteScreen}
