@@ -6,8 +6,9 @@ import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 
 import Client from '../Client';
 import globalStyles from '../GlobalStyles';
-import { UserSessionContext } from '../Context';
 import globalConstants from '../GlobalConstants.js';
+import { useDispatch } from 'react-redux';
+import { loginUser } from '../Redux/User/UserActions';
 
 export default function EPInput(props) {
 
@@ -24,7 +25,7 @@ export default function EPInput(props) {
     message: "",
     status: false,
   });
-  const userContext = useContext(UserSessionContext);
+  const dispatch = useDispatch();
 
   function handleChangeValue(name, value) {
     if (invalidData.status) {
@@ -51,13 +52,13 @@ export default function EPInput(props) {
       try {
         const res = await Client.signin(login)
         await AsyncStorage.setItem('user_session', res.data.token);
-        userContext.handleIsLogged(true);
+        dispatch(loginUser());
       } catch (error) {
         setInvalidData({ message: INVALID_DATA_LOGIN_MESSAGE, status: true });
         console.log(error);
       }
     } */
-    userContext.handleIsLogged(true);
+    dispatch(loginUser(true));
   }
 
   function showInvalidData() {

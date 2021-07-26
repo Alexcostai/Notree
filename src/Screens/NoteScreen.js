@@ -1,63 +1,66 @@
 import React, { useState } from 'react';
 import { Appbar } from 'react-native-paper';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { View, TextInput, ScrollView, StyleSheet } from 'react-native';
 
 //Components
 import NoteMenu from '../Components/Note/NoteMenu/NoteMenu.js';
+import Client from '../Client.js';
+import { useSelector } from 'react-redux';
 
 export default function NoteScreen() {
 
   const NEW_NOTE_ID = -1;
-  const route = useRoute();
+  const navigation = useNavigation();
+  const note = useSelector(state => state.note.note)
 
-  const [snackData, setSnackData] = useState("");
-  const [backgroundColor, setBackgroundColor] = useState(route.params.color);
-  const [note, setNote] = useState({
-    id: route.params.id,
-    title: route.params.title,
-    description: route.params.description,
-    color: route.params.color,
-    userId: route.params.userId
+  const [backgroundColor, setBackgroundColor] = useState(note.color);
+  const [actualNote, setActualNote] = useState({
+    id: note.id,
+    title: note.title,
+    description: note.description,
+    color: note.color,
+    userId: note.userId
   });
 
-  const navigation = useNavigation();
-
-  const handleChangeTitle = (name, value) => {
-    setNote({ ...note, [name]: value });
+  const handleChangeNote = (name, value) => {
+    setActualNote({ ...actualNote, [name]: value });
   }
 
-  const addNote = async (note) => {
-    if (note.id === NEW_NOTE_ID) {
-      if (note.title !== "" || note.description !== "") {
-        /* await firebase.db.collection("notes").add({
-            title: note.title,
-            description: note.description,
-            color: note.color,
-            userId: note.userId
-        }) */
-        navigation.navigate("NoteList", { snackData: "Nota guardada." });
+  async function addNote() {
+    console.log(actualNote);
+    if (actualNote.id === NEW_NOTE_ID) {
+      if (actualNote.title !== "" || actualNote.description !== "") {
+        try {
+          await Client.addNote(actualNote);
+          navigation.navigate("NoteListScreen", { snackData: "Nota guardada." });
+        } catch {
+          alert("Error al guardar la nota :(");
+        }
       } else {
-        navigation.navigate("NoteList", { snackData: "Nota vacía." });
+        navigation.navigate("NoteListScreen", { snackData: "Nota vacía." });
       }
-    } else if (note.title !== route.params.title || note.description !== route.params.description) {
-      /* await firebase.db.collection("notes").doc(note.id).update({
-          title: note.title,
-          description: note.description,
-          color: note.color
-      }) */
-      navigation.navigate("NoteList", { snackData: "Nota actualizada." });
+    } else if (
+      actualNote.title !== note.title ||
+      actualNote.description !== note.description ||
+      actualNote.color !== note.color
+    ) {
+      try {
+        await Client.updateNote(actualNote);
+        navigation.navigate("NoteListScreen", { snackData: "Nota actualizada." });
+      } catch {
+        alert("Error al guardar la nota :(");
+      }
     }
-
-    navigation.navigate("NoteList");
+    navigation.navigate("NoteListScreen");
   }
 
   return (
     <View style={{ flex: 1 }}>
       <Appbar.Header style={{ backgroundColor: backgroundColor }}>
-        <Appbar.BackAction onPress={() => { addNote(note); }} />
+        <Appbar.BackAction onPress={addNote} />
         <Appbar.Content title="Nota" />
-        <NoteMenu note={note} />
+        <NoteMenu />
       </Appbar.Header>
       <ScrollView style={{ ...styles.scrollView, backgroundColor: backgroundColor }}>
         <TextInput
@@ -66,8 +69,8 @@ export default function NoteScreen() {
           maxLength={50}
           textAlignVertical="top"
           multiline
-          onChangeText={value => handleChangeTitle("title", value)}
-          value={note.title}
+          onChangeText={value => handleChangeNote("title", value)}
+          value={actualNote.title}
         />
         <View style={styles.innerLine} />
         <TextInput
@@ -76,8 +79,8 @@ export default function NoteScreen() {
           multiline
           textAlignVertical="top"
           maxLength={4000}
-          onChangeText={value => handleChangeTitle("description", value)}
-          value={note.description}
+          onChangeText={value => handleChangeNote("description", value)}
+          value={actualNote.description}
         />
       </ScrollView>
     </View>

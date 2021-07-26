@@ -1,15 +1,18 @@
-import React, {useContext} from 'react';
-import { UserSessionContext } from '../../Context';
+import React from 'react';
 import { Button, Divider } from 'react-native-paper';
 import { View, Text, Modal, StyleSheet } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { loginUser } from '../../Redux/User/UserActions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LogOutModal(props) {
 
-  const userContext = useContext(UserSessionContext);
+  const dispatch = useDispatch();
 
-  function logOut(){
+  async function logOut(){
     props.setStateModal(false);
-    userContext.handleIsLogged(false);
+    await AsyncStorage.removeItem('user_session');
+    dispatch(loginUser(false));
     console.log("Sesion Cerrada");
   }
 

@@ -6,8 +6,9 @@ import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-nati
 
 import Client from '../Client';
 import globalStyles from '../GlobalStyles';
-import { UserSessionContext } from '../Context';
 import globalConstants from '../GlobalConstants';
+import { useDispatch } from 'react-redux';
+import { loginUser } from '../Redux/User/UserActions';
 
 export default function RegisterInputs() {
 
@@ -29,7 +30,7 @@ export default function RegisterInputs() {
     message: "",
     status: false,
   });
-  const userContext = useContext(UserSessionContext);
+  const dispatch = useDispatch();
 
   const handleChangeValue = (name, value) => {
     if (invalidData.status) {
@@ -66,7 +67,7 @@ export default function RegisterInputs() {
       try {
         const res = await Client.signup(register);
         await AsyncStorage.setItem('user_session', res.data.token);
-        userContext.handleIsLogged(true);
+        dispatch(loginUser(true));
       } catch (error) {
         setInvalidData({ message: INVALID_DATA_REGISTER_MESSAGE, status: true });
         console.log(error);

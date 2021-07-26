@@ -12,10 +12,7 @@ export default function ProfileMenu() {
   const [menuRef, setMenuRef] = useState(null);
 
   const menuButton = <Appbar.Action icon="account-circle" color="white" size={35} onPress={() => showMenu()} />
-  const hideMenu = () => {
-    menuRef.hide();
-    setModalVisibleConfirm(true);
-  };
+  const hideMenu = () => { menuRef.hide(); };
   const showMenu = () => { menuRef.show() };
 
   return (
@@ -27,7 +24,13 @@ export default function ProfileMenu() {
       >
         <MenuItem
           textStyle={{ fontSize: 15 }}
-          onPress={() => { hideMenu() }}
+          onPress={() => { hideMenu(); }}
+        >
+          <Text>Perfíl</Text>
+        </MenuItem>
+        <MenuItem
+          textStyle={{ fontSize: 15 }}
+          onPress={() => { hideMenu(); setModalVisibleConfirm(true); }}
         >
           <Text>Cerrar Sesión</Text>
         </MenuItem>
@@ -39,7 +42,7 @@ export default function ProfileMenu() {
 
 const styles = StyleSheet.create({
   menu: {
-    marginTop: 40, 
+    marginTop: 40,
     elevation: 20,
   }
 })

@@ -17,6 +17,8 @@ export default function NoteListScreen() {
 
   const [notes, setNotes] = useState([]);
   const [loadedNotes, setLoadedNotes] = useState(false);
+  const [snackState, setSnackState] = useState(false);
+  const [snackData, setSnackData] = useState(undefined);
 
   useEffect(async () => {
     try {
@@ -26,11 +28,15 @@ export default function NoteListScreen() {
       console.log(error);
     }
     setLoadedNotes(true);
-  }, []);
+    if(route.params){
+      setSnackState(true);
+      setSnackData(route.params.snackData);
+    }
+  }, [route]);
 
   function showSnack() {
-    if (route.params && route.params.snackData) {
-      return <Snack data={route.params.snackData} state={true} />
+    if (snackData) {
+      return <Snack data={snackData} snackState={snackState} setSnackState={setSnackState} />
     }
   }
 

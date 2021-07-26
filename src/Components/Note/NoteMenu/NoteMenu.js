@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { Appbar } from 'react-native-paper';
 import Menu from 'react-native-material-menu';
 
@@ -7,7 +7,7 @@ import ShareItem from './ShareItem';
 import DeleteItem from './DeleteItem';
 import ColorsItem from './ColorsItem';
 
-export default function NoteMenu(props) {
+export default function NoteMenu() {
 
   const menuButton = <Appbar.Action icon="dots-vertical" onPress={() => showMenu()} />
   const [menuRef, setMenuRef] = useState(null);
@@ -21,9 +21,9 @@ export default function NoteMenu(props) {
       style={{ marginTop: 40, elevation: 20 }}
       button={menuButton}
     >
-      <ColorsItem hideMenu={hideMenu} note={props.note}/>
-      <ShareItem hideMenu={hideMenu} note={props.note}/>
-      <DeleteItem note={props.note}/>
+      <ColorsItem hideMenu={hideMenu} />
+      <ShareItem hideMenu={hideMenu} />
+      <DeleteItem />
     </Menu>
   )
 }
