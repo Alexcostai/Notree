@@ -1,8 +1,21 @@
-const updateNote = note => (
+const loadNote = note => (
   {
-    type: 'UPDATE_NOTE',
+    type: 'LOAD_NOTE',
     note
   }
 )
 
-export {updateNote}
+const resetNote = () => (
+  {
+    type: 'RESET_NOTE'
+  }
+)
+
+const changeColorNote = (color) => (
+  {
+    type: 'CHANGE_COLOR_NOTE',
+    color
+  }
+)
+
+export { loadNote, resetNote, changeColorNote }

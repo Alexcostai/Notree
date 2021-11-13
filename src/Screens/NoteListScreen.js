@@ -4,16 +4,19 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { ScrollView, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 
 import Client from '../Client.js'
+import { useDispatch } from 'react-redux';
 //Components
 import Snack from "../Components/Snack";
 import MyRefreshControl from '../Components/MyRefreshControl.js';
 import ProfileMenu from '../Components/NoteList/ProfileMenu.js';
 import AddNoteButton from '../Components/NoteList/AddNoteButton.js';
+import { loadNote } from '../Redux/Note/NoteActions.js';
 
 export default function NoteListScreen() {
 
   const route = useRoute();
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const [notes, setNotes] = useState([]);
   const [loadedNotes, setLoadedNotes] = useState(false);
@@ -22,17 +25,16 @@ export default function NoteListScreen() {
 
   useEffect(async () => {
     try {
-      const res = await Client.getNotes();
-      setNotes(res.data);
+      await getNotes();
     } catch (error) {
       console.log(error);
     }
     setLoadedNotes(true);
-    if(route.params){
+    if (route.params) {
       setSnackState(true);
       setSnackData(route.params.snackData);
     }
-  }, [route]);
+  }, [route, notes]);
 
   function showSnack() {
     if (snackData) {
@@ -41,34 +43,32 @@ export default function NoteListScreen() {
   }
 
   function showNotes() {
-    notes.map(note => {
+    if (notes.length !== 0) {
       return (
-        <TouchableOpacity
-          key={note.id}
-          style={{ ...styles.noteContainer, backgroundColor: note.color }}
-          onLongPress={() => console.log("Eliminar Activado")}
-          onPress={() => {
-            navigation.navigate(
-              "Note",
-              {
-                id: note.id,
-                title: note.title,
-                description: note.description,
-                color: note.color,
-                userId: note.userId
-              }
-            )
-          }}
-        >
-          <Text style={styles.title} numberOfLines={1}>{note.title}</Text>
-          <Text style={styles.description} numberOfLines={6}>{note.description}</Text>
-        </TouchableOpacity>
-      )
-    })
+        notes.map(note => (
+          <TouchableOpacity
+            key={note.id}
+            style={{ ...styles.noteContainer, backgroundColor: note.color }}
+            onLongPress={() => console.log("Eliminar Activado")}
+            onPress={() => {
+              dispatch(loadNote(note));
+              navigation.navigate("NoteScreen");
+            }}
+          >
+            <Text style={styles.title} numberOfLines={1}>{note.title}</Text>
+            <Text style={styles.content} numberOfLines={6}>{note.content}</Text>
+          </TouchableOpacity>
+        )
+        )
+      );
+    } else {
+      return <Text style={{ ...styles.title, alignSelf: "center", marginTop: 100 }}>No tienes notas!</Text>
+    }
   }
 
-  function onRefresh(){
-    console.log("hola");
+  async function getNotes() {
+    const res = await Client.getNotes();
+    setNotes(res.data.notes);
   }
 
   return (
@@ -83,7 +83,7 @@ export default function NoteListScreen() {
         size={50}
         style={styles.activityIndicator}
       />
-      <ScrollView refreshControl={MyRefreshControl(onRefresh)}>
+      <ScrollView refreshControl={MyRefreshControl(getNotes)}>
         <View style={{ paddingBottom: 12 }}>
           {showNotes()}
         </View>
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20
   },
-  description: {
+  content: {
     fontSize: 14,
   },
   appBar: {

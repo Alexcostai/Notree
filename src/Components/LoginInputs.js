@@ -48,17 +48,19 @@ export default function EPInput(props) {
   }
 
   async function onPress() {
-    /* if (validateData()) {
+    if (validateData()) {
       try {
-        const res = await Client.signin(login)
+        const res = await Client.signin(login);
         await AsyncStorage.setItem('user_session', res.data.token);
-        dispatch(loginUser());
+        dispatch(loginUser(true));
       } catch (error) {
         setInvalidData({ message: INVALID_DATA_LOGIN_MESSAGE, status: true });
         console.log(error);
       }
-    } */
-    dispatch(loginUser(true));
+    }
+
+    // TEST
+    // dispatch(loginUser(true));
   }
 
   function showInvalidData() {

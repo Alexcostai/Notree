@@ -10,7 +10,7 @@ export default function ColorsItem() {
   return (
     <>
     <MenuItem textStyle={{ fontSize: 15 }}
-      onPress={() => { props.hideMenu(); setModalVisibleColor(true); }}
+      onPress={() => { setModalVisibleColor(true); }}
     >
       <Text>Colores</Text>
     </MenuItem>

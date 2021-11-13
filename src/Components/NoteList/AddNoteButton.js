@@ -2,26 +2,18 @@ import React from 'react'
 import Icon from 'react-native-vector-icons/dist/Entypo';
 import { useNavigation } from '@react-navigation/native';
 import { TouchableOpacity, StyleSheet } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { resetNote } from '../../Redux/Note/NoteActions';
 
 export default function AddNoteButton() {
 
-  const NEW_NOTE_ID = -1;
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   return (
     <TouchableOpacity
       style={styles.createButton}
-      onPress={() => navigation.navigate
-        (
-          "NoteScreen",
-          {
-            id: NEW_NOTE_ID,
-            title: "",
-            description: "",
-            color: "white",
-          }
-        )
-      }
+      onPress={() => ( dispatch(resetNote()), navigation.navigate("NoteScreen"))}
     >
       <Icon style={styles.plus} name="plus" />
     </TouchableOpacity>

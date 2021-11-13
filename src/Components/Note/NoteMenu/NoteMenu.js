@@ -21,7 +21,7 @@ export default function NoteMenu() {
       style={{ marginTop: 40, elevation: 20 }}
       button={menuButton}
     >
-      <ColorsItem hideMenu={hideMenu} />
+      <ColorsItem />
       <ShareItem hideMenu={hideMenu} />
       <DeleteItem />
     </Menu>

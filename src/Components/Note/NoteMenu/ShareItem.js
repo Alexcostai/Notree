@@ -2,17 +2,19 @@ import React from 'react';
 import { Text, Share } from 'react-native';
 import { MenuItem } from 'react-native-material-menu';
 
+import { useSelector } from 'react-redux';
+
 export default function ShareItem(props) {
 
-  const note = props.note;
+  const note = useSelector(state => state.note.note);
 
   async function shareNote() {
     props.hideMenu();
-    if (note.title || note.description) {
+    if (note.title || note.content) {
       try {
         const result = await Share.share({
           message:
-            note.title + "\n" + note.description,
+            note.title + "\n" + note.content,
         });
         if (result.action === Share.sharedAction) {
           console.log("Sharing");
@@ -22,7 +24,7 @@ export default function ShareItem(props) {
       } catch (error) {
         console.log(error.message);
       }
-    } else{
+    } else {
       alert("La nota esta vacia!");
     }
   }

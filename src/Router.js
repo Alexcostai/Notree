@@ -7,8 +7,9 @@ import { KeyboardAvoidingView, SafeAreaView, StyleSheet } from 'react-native';
 import TabBarStack from './Stacks/TabBarStack';
 import LogOutStack from './Stacks/LogOutStack';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginUser } from './Redux/User/UserActions';
+import { loginUser, loadProfile } from './Redux/User/UserActions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Client from './Client';
 
 const Stack = createStackNavigator();
 
@@ -20,10 +21,14 @@ export default function Router() {
   useEffect(async () => {
     const session = await AsyncStorage.getItem('user_session');
     if(session!==null){
+      const userData = await Client.profile();
+      dispatch(loadProfile(userData));
       dispatch(loginUser(true));
     } else{
-      // dispatch(loginUser(false));
-      dispatch(loginUser(true));
+      dispatch(loginUser(false));
+
+      //TEST
+      // dispatch(loginUser(true));
     }
   }, [])
 

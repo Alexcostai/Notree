@@ -1,8 +1,15 @@
 const loginUser = value => (
   {
     type: 'LOGIN_USER',
-    value: value,
+    value
   }
 )
 
-export { loginUser }
+const loadProfile = data => (
+  {
+    type: 'LOAD_PROFILE',
+    data
+  }
+)
+
+export { loginUser, loadProfile }

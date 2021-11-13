@@ -1,8 +1,14 @@
 import React from 'react';
 import Icon from 'react-native-vector-icons/dist/Ionicons';
-import { View, StyleSheet, TouchableOpacity, Modal } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Modal, Text } from 'react-native';
+
+import { useDispatch, useSelector } from 'react-redux';
+import { changeColorNote } from '../../../Redux/Note/NoteActions';
 
 export default function ColorsModal(props) {
+
+  const dispatch = useDispatch();
+  const noteBackground = useSelector(state => state.note.color);
 
   const colors = [
     "white", "#d6d6d6", "lightyellow", "#acdce8", "#b3f5c7", "#edae7e", "pink", "#dcbaff"
@@ -11,10 +17,10 @@ export default function ColorsModal(props) {
   function createBackgroundColors() {
     return (
       colors.map((color, i) => (
-        <TouchableOpacity key={i} onPress={() => { props.setModalState(false); setBackgroundColor(color); setNote({ ...note, color: color }) }}>
+        <TouchableOpacity key={i} onPress={() => { props.setModalState(false); dispatch(changeColorNote(color)); }}>
           <View style={{ ...styles.colorButton, backgroundColor: color }}>
             {
-              backgroundColor === color ?
+              noteBackground === color ?
                 <View>
                   <Icon style={{ alignSelf: "center", marginTop: 2 }} name="checkmark" size={30} color="black" />
                   <View style={{ ...styles.colorButton, bottom: 40, right: 5, backgroundColor: "lightgray", opacity: 0.2 }} />
@@ -24,7 +30,7 @@ export default function ColorsModal(props) {
           </View>
         </TouchableOpacity>
       ))
-    )
+    );
   }
 
   return (
@@ -62,5 +68,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 10
+  },
+  colorButton: {
+    width: 40,
+    height: 40,
+    borderColor: "#d6d6d6",
+    borderWidth: 1,
+    borderRadius: 100,
+    margin: 5,
   },
 })
